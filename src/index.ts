@@ -8,7 +8,11 @@ const score = new Score();
 const fruits_url = 'http://localhost:3000/fruits';
 const intervalRandomNumber = Math.floor(Math.random() * 1000);
 const gameContainer = document.getElementById('game-container');
-
+const gameLevel = {
+  1: 2000,
+  2: 1000,
+  3: 500
+}
 const fruits$: Observable<Fruit[]> = fetchFruits();
 
 function fetchFruits(): Observable<Fruit[]> {
@@ -24,7 +28,7 @@ function fetchFruits(): Observable<Fruit[]> {
 
 }
 
-interval(2000)
+interval(1000)    //menja se interval u zavisnosti od nivoa
   .pipe(
     switchMap(() => fruits$),
     switchMap((fruits) => getRandomFruit(fruits, fruits.length))
@@ -50,21 +54,13 @@ function drawFruit(x: number, y: number, imageUrl: string): HTMLElement {
 
   animateFallingFruit(fruitElement);
 
-
-  if (basket.checkCollision(fruitElement)) {
-    score.increaseScore();
-    fruitElement.remove();
-  } else {
-    animateFallingFruit(fruitElement);
-  }
-
   return fruitElement;
 }
 
 function animateFallingFruit(fruitElement: HTMLElement) {
   interval(50)
     .pipe(
-      take(100)
+      take(1000)
     )
     .subscribe(() => {
       const currentPosition: number = parseInt(fruitElement.style.top, 10);
@@ -75,6 +71,9 @@ function animateFallingFruit(fruitElement: HTMLElement) {
       } else if (basket.checkCollision(fruitElement)) {
         score.increaseScore();
         fruitElement.remove();
+        if(score.value === 3) {
+          basket.makeFullBasket();
+        }
       }
 
     });

@@ -14,7 +14,11 @@ export class Score {
       this.scoreElement.style.fontSize = '40px'
       document.body.appendChild(this.scoreElement);
     }
-  
+
+    public get value() : number {
+      return this.score;
+    }
+    
     increaseScore(): void {
       this.score++;
       this.updateScoreDisplay();

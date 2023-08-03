@@ -33,4 +33,8 @@ export class Basket {
       return false;
     }
   }
+
+  makeFullBasket() : void {
+    this.element.style.backgroundImage = `url('../assets/images/full-basket.png')`;
+  }
 }
