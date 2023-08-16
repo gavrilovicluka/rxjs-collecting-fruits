@@ -19,7 +19,7 @@ export class Fruit {
 
   drawFruit(x: number, y: number, imageUrl: string, gameContainer : HTMLElement): HTMLElement {
     const fruitElement: HTMLElement = document.createElement('div');
-    fruitElement.className = 'vocka';
+    fruitElement.className = 'fruit';
     fruitElement.style.left = `${x}px`;
     fruitElement.style.top = `${y}px`;
     fruitElement.style.backgroundImage = `url('${imageUrl}')`;
