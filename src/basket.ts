@@ -7,12 +7,13 @@ export class Basket {
 
   constructor() {
     this.element = document.getElementById('empty-fruit-basket');
-    this.moveObservable = fromEvent<MouseEvent>(document, 'mousemove')
-      .pipe(map(event => event.clientX - this.element.offsetWidth / 2));
+  }
 
-    this.moveObservable.subscribe((position) => {
-      this.move(position);
-    });
+  createBasket(): void {
+    const basketContainer = document.createElement('div');
+    basketContainer.id = 'empty-fruit-basket';
+    document.body.appendChild(basketContainer);
+    this.element = basketContainer;
   }
 
   move(position: number): void {
@@ -34,7 +35,7 @@ export class Basket {
     }
   }
 
-  makeFullBasket() : void {
+  makeFullBasket(): void {
     this.element.style.backgroundImage = `url('../assets/images/full-basket.png')`;
   }
 }

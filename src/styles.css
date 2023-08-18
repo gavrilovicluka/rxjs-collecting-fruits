@@ -45,7 +45,6 @@ body {
 .game-info-label {
   display: inline-block;
   padding: 10px 20px;
-  font-size: 20px;
   color: #4caf50;
   background-color: #fff;
   border: 2px solid #4caf50;
@@ -54,4 +53,7 @@ body {
   cursor: pointer;
   text-align: center;
   margin: 20px;
+  top: 10px;
+  left: 10px;
+  font-size: 40px;
 }
