@@ -20,6 +20,7 @@ body {
   position: absolute;
   background-size: cover;
   background-position: center;
+  transition: 2s;
 }
 
 .start-button {

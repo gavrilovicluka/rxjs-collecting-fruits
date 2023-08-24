@@ -45,7 +45,7 @@ basketMoveSubscription = basket.moveObservable.subscribe((position) => {
 
 const randomFruit$: Observable<Fruit> = fromEvent(startButton, 'click')
   .pipe(
-    tap(() => basketMoveSubscription = prepareGame(startButton, score, lives, gameMenuDiv, basketMoveSubscription, basket)),
+    map(() => basketMoveSubscription = prepareGame(startButton, score, lives, gameMenuDiv, basketMoveSubscription, basket)),
     switchMap(() => interval(1000)
       .pipe(
         switchMap(() => fruits$),
@@ -53,9 +53,66 @@ const randomFruit$: Observable<Fruit> = fromEvent(startButton, 'click')
       ))
   );
 
-randomFruit$.subscribe((randomFruit) => {
+// const randomFruit$: Observable<Fruit> = interval(1000)
+// .pipe(
+//   switchMap(() => fruits$),
+//   switchMap((fruits) => getRandomFruit(fruits, fruits.length))
+// )
+
+// randomFruit$.subscribe((randomFruit) => {
+//   drawFruit(Math.random() * (window.innerWidth - 50), -100, randomFruit.image);
+// });
+
+//************new */
+const fruitsToDrop$: Observable<Fruit>[] = [];
+
+for (let i = 0; i < 3; i++) { // Primer: Želite da padne do 5 voćki istovremeno
+  fruitsToDrop$.push(randomFruit$);
+  //console.log(randomFruit$);
+  randomFruit$.subscribe((x) => console.log(x))
+
+}
+
+
+
+const combinedFruits$: Observable<Fruit> = merge(...fruitsToDrop$);
+
+combinedFruits$.subscribe((randomFruit) => {
   drawFruit(Math.random() * (window.innerWidth - 50), -100, randomFruit.image);
 });
+//********************end new */
+
+// const combinedFruits$: Observable<Fruit> = randomFruit$
+//   .pipe(
+
+//     concatMap(() => {
+
+//       let numFruitsToDrop = Math.floor(Math.random() * 5) + 1; // Generišite slučajan broj od 1 do 5
+//       let fruitsToDrop$: Observable<Fruit>[] = [];
+
+//       console.log(`Dropping ${numFruitsToDrop} fruits`);
+
+//       for (let i = 0; i < numFruitsToDrop; i++) {
+//         fruitsToDrop$.push(randomFruit$);
+//       }
+
+//       return merge(...fruitsToDrop$);
+//     })
+//   );
+
+// combinedFruits$.subscribe((randomFruit) => {
+//   //console.log('Combined randomFruit$:', randomFruit);
+//   drawFruit(Math.random() * (window.innerWidth - 50), -100, randomFruit.image);
+// });
+
+
+
+
+
+
+
+
+
 
 
 // const startButtonClick$ = fromEvent(startButton, 'click').pipe(
@@ -109,8 +166,9 @@ function drawFruit(x: number, y: number, imageUrl: string) {
 //   animateFallingFruit(fruitElement);
 // });
 
+/* --------------------------------------------------*/
 function startFallingAnimation(fruitElement: HTMLElement) {
-  interval(50)      //ovde se podesava brzina animacije padanja
+  interval(Math.floor(Math.random() * (70 - 50)) + 50)      //ovde se podesava brzina animacije padanja
     .pipe(
       take(200),
       takeWhile(() => lives.getValue() > 0),
@@ -120,11 +178,16 @@ function startFallingAnimation(fruitElement: HTMLElement) {
 
 function animateFallingFruit(fruitElement: HTMLElement) {
   const currentPosition: number = fruitElement.offsetTop;   //sa parseInt(fruitElement.style.top, 10) dolazi do problema jer pretpostavljam da stil top nije postavljen tacno na brojcanu vrednost
-  fruitElement.style.top = `${currentPosition + 5}px`;
+  //fruitElement.style.top = `${currentPosition + 15}px`;
+  //console.log('current position: ', currentPosition);
+  fruitElement.style.top = '120vh';     //ako se stavi npr. 50px, vocka padne do 50px s vrha i stane, zbog toga je 100vh da padne skroz dole. Stavljeno je 120vh jer kad je 100vh animacija uspori pred kraj
+  //fruitElement.style.transform = `translateY(${currentPosition + 5}px)`;
+  fruitElement.style.transform = `translateY(5px)`;
 
   checkFruitPosition(fruitElement, currentPosition);
 
 }
+/*--------------------------------------------------------*/
 
 function checkFruitPosition(fruitElement: HTMLElement, currentPosition: number) {
 

@@ -38,4 +38,8 @@ export class Basket {
   makeFullBasket(): void {
     this.element.style.backgroundImage = `url('../assets/images/full-basket.png')`;
   }
+
+  makeEmptyBasket(): void {
+    this.element.style.backgroundImage = `url('../assets/images/empty-basket.png')`;
+  }
 }

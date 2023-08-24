@@ -33,6 +33,8 @@ export function prepareGame(startButton: HTMLButtonElement, score: Score, lives:
         gameOverMessage.remove();
     }
 
+    basket.makeEmptyBasket();
+    
     if (!basketMoveSubscription) {
         basketMoveSubscription = basket.moveObservable.subscribe((position) => {
             basket.move(position);
