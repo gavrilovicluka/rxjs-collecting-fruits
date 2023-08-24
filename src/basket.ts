@@ -9,10 +9,10 @@ export class Basket {
     this.element = document.getElementById('empty-fruit-basket');
   }
 
-  createBasket(): void {
+  createBasket(parent : HTMLDivElement): void {
     const basketContainer = document.createElement('div');
     basketContainer.id = 'empty-fruit-basket';
-    document.body.appendChild(basketContainer);
+    parent.appendChild(basketContainer);
     this.element = basketContainer;
   }
 

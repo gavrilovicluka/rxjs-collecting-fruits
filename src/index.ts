@@ -1,26 +1,24 @@
-import { Observable, Subscription, animationFrameScheduler, combineLatest, concatMap, debounceTime, from, fromEvent, interval, map, merge, mergeMap, of, subscribeOn, switchMap, take, takeUntil, takeWhile, tap, timer, zip } from "rxjs";
+import { Observable, Subscription, animationFrameScheduler, combineLatest, concatMap, debounceTime, forkJoin, from, fromEvent, generate, interval, map, merge, mergeMap, of, subscribeOn, switchMap, take, takeUntil, takeWhile, tap, timer, zip } from "rxjs";
 import { Basket } from "./basket";
 import { Score } from "./score";
 import { Fruit } from "./fruit";
 import { Lives } from "./lives";
-import { createGameMenuDiv, createStartButton, gameOver, prepareGame } from "./game";
+import { Game } from "./game";
 
+const game = new Game();
 let gameSubscription: Subscription | null = null;
 let basketMoveSubscription: Subscription | null = null;
 const basket = new Basket();
 const score = new Score();
 const lives = new Lives();
 const fruits_url = 'http://localhost:3000/fruits';
-const gameContainer = document.getElementById('game-container');
-// const gameLevel = {
-//   1: 2000,
-//   2: 1000,
-//   3: 500
-// }
 
-basket.createBasket();
-const gameMenuDiv = createGameMenuDiv();
-const startButton = createStartButton(gameMenuDiv);
+game.drawGame(score, lives);
+//const gameMenuDiv = game.createGameMenuDiv();
+const gameContainer = game.getGameContainer();
+basket.createBasket(gameContainer);
+//const gameOverMessage = game.createGameOverMessage(gameContainer);
+const startButton = game.createStartButton(gameContainer);
 
 const fruits$: Observable<Fruit[]> = fetchFruits();
 
@@ -43,21 +41,48 @@ basketMoveSubscription = basket.moveObservable.subscribe((position) => {
   basket.move(position);
 });
 
-const randomFruit$: Observable<Fruit> = fromEvent(startButton, 'click')
-  .pipe(
-    map(() => basketMoveSubscription = prepareGame(startButton, score, lives, gameMenuDiv, basketMoveSubscription, basket)),
-    switchMap(() => interval(1000)
-      .pipe(
-        switchMap(() => fruits$),
-        switchMap((fruits) => getRandomFruit(fruits, fruits.length))
-      ))
-  );
+/*     start       1111              */
+// const startGame$: Observable<Fruit> = fromEvent(startButton, 'click')
+//   .pipe(
+//     map(() => basketMoveSubscription = prepareGame(startButton, score, lives, gameMenuDiv, basketMoveSubscription, basket)),
+//     switchMap(() => randomFruit$)
+//   );
 
 // const randomFruit$: Observable<Fruit> = interval(1000)
 // .pipe(
 //   switchMap(() => fruits$),
 //   switchMap((fruits) => getRandomFruit(fruits, fruits.length))
 // )
+
+const startGame$: Observable<Fruit[]> = fromEvent(startButton, 'click').pipe(
+  map(() => game.prepareGame(startButton, score, lives, basketMoveSubscription, basket)),
+  switchMap(() => interval(1000)),
+  switchMap(() => fruits$),
+  mergeMap((fruits: Fruit[]) => generateRandomFruitsObservable(fruits))
+);
+
+function generateRandomFruitsObservable(fruits: Fruit[]): Observable<Fruit[]> {
+
+  const numberOfFruitsToDrop = game.setNumberOfFruitsToDrop(); // U zavisnosti od nivoa pada razlicit broj vocki odjednom
+  const randomFruits$: Observable<Fruit>[] = [];
+
+  for (let i = 0; i < numberOfFruitsToDrop; i++) {
+    randomFruits$.push(getRandomFruit(fruits, fruits.length));
+  }
+  return forkJoin(randomFruits$); // Ovde koristimo forkJoin da bismo čekali sve voćke da se pripreme
+
+}
+
+startGame$.subscribe((randomFruits) => {
+  randomFruits.forEach((randomFruit) => {
+    drawFruit(Math.random() * (window.innerWidth - 50), -100, randomFruit.image);
+  });
+});
+
+
+
+
+/*     end         111111             */
 
 // randomFruit$.subscribe((randomFruit) => {
 //   drawFruit(Math.random() * (window.innerWidth - 50), -100, randomFruit.image);
@@ -66,20 +91,24 @@ const randomFruit$: Observable<Fruit> = fromEvent(startButton, 'click')
 //************new */
 const fruitsToDrop$: Observable<Fruit>[] = [];
 
-for (let i = 0; i < 3; i++) { // Primer: Želite da padne do 5 voćki istovremeno
-  fruitsToDrop$.push(randomFruit$);
-  //console.log(randomFruit$);
-  randomFruit$.subscribe((x) => console.log(x))
 
-}
+/*       start         11111111111                   */
+// for (let i = 0; i < 3; i++) { // Primer: Želite da padne do 5 voćki istovremeno
+//   fruitsToDrop$.push(startGame$);
+//   //console.log(randomFruit$);
+//   randomFruit$.subscribe((x) => console.log(x))
+
+// }
 
 
 
-const combinedFruits$: Observable<Fruit> = merge(...fruitsToDrop$);
+// const combinedFruits$: Observable<Fruit> = merge(...fruitsToDrop$);
 
-combinedFruits$.subscribe((randomFruit) => {
-  drawFruit(Math.random() * (window.innerWidth - 50), -100, randomFruit.image);
-});
+// combinedFruits$.subscribe((randomFruit) => {
+//   drawFruit(Math.random() * (window.innerWidth - 50), -100, randomFruit.image);
+// });
+
+/*      end           11111111111111111                */
 //********************end new */
 
 // const combinedFruits$: Observable<Fruit> = randomFruit$
@@ -195,10 +224,12 @@ function checkFruitPosition(fruitElement: HTMLElement, currentPosition: number) 
     fruitElement.remove();
     lives.decrease();
     if (lives.getValue() <= 0) {
-      basketMoveSubscription = gameOver(basketMoveSubscription, startButton);
+      basketMoveSubscription = game.gameOver(basketMoveSubscription, startButton);
     }
   } else if (basket.checkCollision(fruitElement)) {
     score.increaseScore();
+    game.checkLevel(score.getValue());
+    console.log(game.getLevel());
     fruitElement.remove();
     if (score.getValue() === 3) {
       basket.makeFullBasket();

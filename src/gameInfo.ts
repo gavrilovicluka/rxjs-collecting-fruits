@@ -15,7 +15,7 @@ export abstract class GameInfo {
         this.element = document.createElement('div');
         this.element.className = 'game-info-label';
         this.updateInfoDisplay();
-        document.body.appendChild(this.element);
+        parent.appendChild(this.element);
     }
 
     getValue(): number {

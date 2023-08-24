@@ -14,6 +14,21 @@
         "id": 3,
         "name": "Pear",
         "image": "../assets/images/pear.png" 
+      },
+      {
+        "id": 4,
+        "name": "Peach",
+        "image": "../assets/images/peach.png" 
+      },
+      {
+        "id": 5,
+        "name": "Cherry",
+        "image": "../assets/images/cherry.png" 
+      },
+      {
+        "id": 6,
+        "name": "Plum",
+        "image": "../assets/images/plum.png" 
       }
     ]
   }
