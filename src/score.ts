@@ -1,4 +1,4 @@
-import { GameInfo } from "./gameInfo";
+import { GameInfo } from "./game-info";
 
 export class Score extends GameInfo {
 

@@ -3,13 +3,12 @@ import { map } from 'rxjs/operators';
 
 export class Basket {
   element: HTMLElement;
-  moveObservable: Observable<number>;
 
   constructor() {
     this.element = document.getElementById('empty-fruit-basket');
   }
 
-  createBasket(parent : HTMLDivElement): void {
+  createBasket(parent: HTMLDivElement): void {
     const basketContainer = document.createElement('div');
     basketContainer.id = 'empty-fruit-basket';
     parent.appendChild(basketContainer);
