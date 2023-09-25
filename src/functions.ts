@@ -20,13 +20,13 @@ export function generateRandomFruitsObservable(game: Game, fruits: Fruit[]): Obs
     const randomFruits$: Observable<Fruit>[] = [];
 
     for (let i = 0; i < numberOfFruitsToDrop; i++) {
-        randomFruits$.push(getRandomFruit(fruits, fruits.length));
+        randomFruits$.push(getRandomFruit(fruits));
     }
 
-    return forkJoin(randomFruits$); //kao PromiseAll
+    return forkJoin(randomFruits$);
 }
 
-export function getRandomFruit(fruits: Fruit[], length: number): Observable<Fruit> {
+export function getRandomFruit(fruits: Fruit[]): Observable<Fruit> {
     const randomNumber = Math.floor(Math.random() * fruits.length);
     return of(fruits[randomNumber]);
 }

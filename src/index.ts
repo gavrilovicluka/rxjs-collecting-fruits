@@ -7,13 +7,13 @@ import { Game } from "./game";
 import { takeWhile, map } from 'rxjs/operators';
 import { drawFruits, fetchFruits, generateRandomFruitsObservable } from "./functions";
 import { State } from "./interfaces";
+import { fruits_url } from "./environment";
 
 const game = new Game();
 const basket = new Basket();
 const score = new Score();
 const lives = new Lives();
 let gameSubscription: Subscription | null = null;
-const fruits_url = 'http://localhost:3000/fruits';
 const state : State = {
     game, 
     basket,
@@ -29,11 +29,11 @@ basket.createBasket(gameContainer);
 
 const startButton = game.createStartButton(gameContainer);
 
-const startButtonClick$ = fromEvent(startButton, 'click');
+const startButtonClick$: Observable<Event> = fromEvent(startButton, 'click');
 
 const fruits$: Observable<Fruit[]> = fetchFruits(fruits_url);
 
-const mouseMove$ = fromEvent<MouseEvent>(document, 'mousemove');
+const mouseMove$: Observable<MouseEvent> = fromEvent<MouseEvent>(document, 'mousemove');
 
 const basketMoveObservable$ = mouseMove$.pipe(
     map(event => event.clientX - basket.element.offsetWidth / 2),
@@ -41,7 +41,7 @@ const basketMoveObservable$ = mouseMove$.pipe(
     takeWhile(() => lives.getValue() > 0)
 );
 
-const gameTick$ = interval(1000);
+const gameTick$: Observable<number> = interval(1000);
 
 const fruitsToDrop$: Observable<Fruit[]> = gameTick$.pipe(
     switchMap(() => fruits$),

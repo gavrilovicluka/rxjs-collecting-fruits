@@ -1,6 +1,3 @@
-import { Observable, fromEvent } from 'rxjs';
-import { map } from 'rxjs/operators';
-
 export class Basket {
   element: HTMLElement;
 

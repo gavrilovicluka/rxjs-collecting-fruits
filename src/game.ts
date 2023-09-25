@@ -1,4 +1,3 @@
-import { Observable, Subscription } from "rxjs";
 import { Score } from "./score";
 import { Lives } from "./lives";
 import { Basket } from "./basket";
