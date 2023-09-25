@@ -14,8 +14,8 @@ const basket = new Basket();
 const score = new Score();
 const lives = new Lives();
 let gameSubscription: Subscription | null = null;
-const state : State = {
-    game, 
+const state: State = {
+    game,
     basket,
     score,
     lives,
@@ -49,26 +49,17 @@ const fruitsToDrop$: Observable<Fruit[]> = gameTick$.pipe(
     tap((randomFruits) => drawFruits(randomFruits, gameContainer, state)),
     takeWhile(() => lives.getValue() > 0)
 );
-//switchMap: Ako se koristi switchMap, obrada ce se prekinuti kada stigne novi dogadjaj u gameTick$. 
-//To znaci da ce se samo vocke generisane za najnoviji dogadjaj u generateRandomFruitsObservable obradjivati. 
-//Ako se brzo pokrecu novi dogadjaji u gameTick$, stari unutrasnji observabli ce biti odbaceni pre nego sto su zavrseni, 
-//sto moze rezultirati manjim brojem vocki koje padaju ako se cesto pokrecu novi dogadjaji.
-//mergeMap: Sa mergeMap, svi unutrasnji observabli ce se obradjivati paralelno, bez obzira na to kada stizu novi dogadjaji u gameTick$. 
-//To znaci da ce se vocke generisane za svaki dogadjaj u generateRandomFruitsObservable obradjivati istovremeno. Ako se brzo pokreću novi 
-//dogadjaji u gameTick$, svaki od njih ce dodati nove vocke u igru, sto moze rezultirati vecim brojem vocki koje padaju ako se cesto pokrecu novi dogadjaji.
-//Ako se dogadjaji u gameTick$ ne pokrecu toliko brzo, mozda nema velike razlike izmedju switchMap i mergeMap, jer novi dogadjaji stizu pre nego sto se 
-//stari unutrasnji observabli zavrse. U tom slucaju, oba operatora ce se ponasati slicno.
 
 
-const gameInProgress$ = combineLatest([basketMoveObservable$, fruitsToDrop$])   // emituje vrednosti svih tokova kad bilo koji tok emituje. Moglo i sa merge(bez [])
+const gameInProgress$ = combineLatest([basketMoveObservable$, fruitsToDrop$])
     .pipe(
         takeWhile(() => lives.getValue() > 0),
-        finalize(() => {            // razlika izmedju ovog i complete je sto se complete nece izvrsiti ako se tok zavrsi zbog greske
+        finalize(() => {
             game.gameOver(startButton);
         })
     )
 
-// Stalno se osluskuje klik na Start dugme zbog situacije kada bude Game over, a gameSubscription se unsubscribe u toj situaciji     
+
 startButtonClick$.subscribe(() => {
     game.prepareGame(startButton, score, lives, basket);
     state.gameSubscription = gameInProgress$.subscribe();

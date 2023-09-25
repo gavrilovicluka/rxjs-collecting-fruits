@@ -48,28 +48,28 @@ export function drawFruits(fruits: Fruit[], gameContainer: HTMLDivElement, state
 }
 
 export function startFallingAnimation(fruitElement: HTMLElement, state: State) {
-    const animation$: Observable<void> = interval(Math.floor(Math.random() * (100 - 50)) + 50)      //ovde se podesava brzina animacije padanja (od 50 do 100ms)
+    const animation$: Observable<void> = interval(Math.floor(Math.random() * (100 - 50)) + 50)      // brzina animacije padanja (od 50 do 100ms)
         .pipe(
             take(50),
             map(() => animateFallingFruit(fruitElement, state))
         )
 
-    animation$.subscribe();     //zbog take(50) ce se tok sam unsubscribe-ovati nakon sto primi 50 vrednosti, sto znaci da ce resursi biti oslobodjeni
+    animation$.subscribe();   
 }
 
 export function animateFallingFruit(fruitElement: HTMLElement, state: State) {
-    fruitElement.style.top = '120vh';     //ako se stavi npr. 50px, vocka padne do 50px s vrha i stane, zbog toga je 100vh da padne skroz dole. Stavljeno je 120vh jer kad je 100vh animacija uspori pred kraj
+    fruitElement.style.top = '120vh';
     fruitElement.style.transform = `translateY(5px)`;
 
     checkFruitPosition(fruitElement, state);
 }
 
 export function checkFruitPosition(fruitElement: HTMLElement, state: State) {
-    const currentPosition: number = fruitElement.offsetTop;  //sa parseInt(fruitElement.style.top, 10) dolazi do problema jer pretpostavljam da stil top nije postavljen tacno na brojcanu vrednost
+    const currentPosition: number = fruitElement.offsetTop; 
     if (currentPosition >= window.innerHeight) {
         fruitElement.remove();
         state.lives.decrease();
-        if (state.lives.getValue() <= 0) {    //mora ova provera da bi se odmah prekinula igrica
+        if (state.lives.getValue() <= 0) {
             endGameSubscription(state);
         }
     } else if (state.basket.checkCollision(fruitElement)) {
